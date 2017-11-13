@@ -16,7 +16,7 @@
 
 # 使用
 
-- 新建一个类
+- 新建一个类,推荐使用单例类
 
 ```
 /// .h文件
@@ -25,7 +25,7 @@
 /// 使用单例
 @property (class, readonly, strong) CCUserDefault *sharedManager;
 
-/// c语言类型,支持整形和浮点型,包括NSInteger,CGFloat等
+/// c语言类型,仅支持整形、浮点型、布尔型,包括NSInteger,CGFloat等
 @property (nonatomic, assign) int intType;
 
 /// oc对象类型,仅支持NSString, NSData, NSNumber, NSDate, NSArray, NSDictionary ,NSURL以及对应的可变类型
@@ -54,6 +54,7 @@
 
 + (void)load
 {
+    /// 将CCUserDefault添加到CCUserDefaultsManager中,那么CCUserDefault的成员变量的`set`和`get`方法都会映射成与`NSUserDefaults`对应的存取方法
     [[CCUserDefaultsManager sharedManager] addClass:[CCUserDefault class]];
 }
 @end
@@ -77,7 +78,7 @@ CCUserDefault *defaults = [CCUserDefault sharedManager];
 NSLog(@"%d%@",defaults.intType,defaults.string);
 ```
 
-
+`CCUserDefault`类的所有成员变量存取都会映射到`NSUserDefaults`中
 
 ## 系统要求
 
