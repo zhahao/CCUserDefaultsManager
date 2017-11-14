@@ -19,7 +19,7 @@
 @property (nonatomic, assign) double doubleType;
 @property (nonatomic, assign) BOOL boolType;
 
-/// oc对象类型,仅支持NSString, NSData, NSNumber, NSDate, NSArray, NSDictionary ,NSURL以及对应的可变类型
+/// oc对象类型,仅支持NSString, NSData, NSNumber, NSDate, NSArray, NSDictionary ,NSURL等不可变版本
 @property (nonatomic, strong) NSString *string;
 @property (nonatomic, strong) NSData *data;
 @property (nonatomic, strong) NSNumber *number;
@@ -28,7 +28,7 @@
 @property (nonatomic, strong) NSDictionary *dictionary;
 @property (nonatomic, strong) NSURL *url;
 
-/// 忽略的成员变量
+/// 忽略的成员变量,需要实现CCUserDefaultsManager协议
 @property (nonatomic, strong) NSString *ignoreString;
 
 @end

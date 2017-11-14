@@ -24,7 +24,7 @@
     [self fetchFromUserDefaults];
 }
 
-/// 删除关联,并恢复class原来的成员变量存取方法
+// 删除关联,并恢复class原来的成员变量存取方法
 - (void)removeClass
 {
     [[CCUserDefaultsManager sharedManager] removeClass:[CCUserDefault class]];
@@ -37,6 +37,7 @@
 - (void)storeToUserDefaults {
     CCUserDefault *defaults = [CCUserDefault sharedManager];
 
+    // 每一次的set方法都是在向NSUserDefaults中存值
     defaults.intType = 1;
     defaults.floatType = 2.222;
     defaults.doubleType = 3.3333333;
@@ -57,6 +58,7 @@
 
 // 从NSUserDefaults取出来
 - (void)fetchFromUserDefaults {
+    // 每一次的get方法都是在向NSUserDefaults中取值
     CCUserDefault *defaults = [CCUserDefault sharedManager];
     NSLog(@"%@",defaults);
 }
