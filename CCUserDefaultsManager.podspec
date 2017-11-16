@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name         = "CCUserDefaultsManager"
   s.version      = "1.1"
-  s.summary      = "这是一个用来集中式管理NSUserDefaults存储的框架."
+  s.summary      = "使对NSUserDefaults的存取操作具有更高的内聚性.Make access to the NSUserDefaults operation has a higher cohesiveness."
   s.homepage     = "https://github.com/zhahao/CCUserDefaultsManager"
   s.license      = "MIT"
   s.author       = { "zhahao" => "506902638@qq.com" }
