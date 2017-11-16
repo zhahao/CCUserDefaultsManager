@@ -28,7 +28,7 @@
 + (void)load
 {
     /// 将CCUserDefault添加到CCUserDefaultsManager中,那么CCUserDefault的成员变量的存取方法都会映射成与`NSUserDefaults`对应的存取方法
-    [[CCUserDefaultsManager sharedManager] addClass:self];
+    [[CCUserDefaultsManager sharedManager] addClass:self prefix:@"cc_"];
 }
 
 + (NSArray *)cc_blackList
@@ -36,9 +36,9 @@
     return @[@"ignoreString"];
 }
 
-- (NSString *)description
+- (NSString *)log
 {
-    return [NSString stringWithFormat:@"<%@ intType: %d, floatType: %f, doubleType: %f,boolType: %d,string: %@,data: %@,number: %@,date: %@,array: %@,dictionary: %@,url: %@,ignoreString:%@ ,userName: %@>", self.class,self.intType,self.floatType,self.doubleType,self.boolType,self.string,self.data,self.number,self.date,self.array,self.dictionary,self.url,self.ignoreString,self.userName];
+    return [NSString stringWithFormat:@"<%@ \n intType: %d, \n floatType: %f,\n doubleType: %f, \n boolType: %d, \n string: %@,\n data: %@,number: %@,\n date: %@,\n array: %@,\n dictionary: %@,\n url: %@, \n ignoreString:%@ ,\n userName: %@>", self.class,self.intType,self.floatType,self.doubleType,self.boolType,self.string,self.data,self.number,self.date,self.array,self.dictionary,self.url,self.ignoreString,self.userName];
 }
 
 @end

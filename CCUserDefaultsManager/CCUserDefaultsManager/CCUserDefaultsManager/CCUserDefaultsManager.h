@@ -23,6 +23,8 @@
 
 /// 添加需要和NSUserDefaults映射的class,多次添加同一个class,最终只会被添加一次.
 - (void)addClass:(Class)cls;
+/// 添加一个映射class和它的所有属性前缀
+- (void)addClass:(Class)cls prefix:(NSString *)prefix;
 
 /// 更新已经和NSUserDefaults映射的class,当你使用runtime修改了过类的成员变量时,需要更新.
 - (void)updateClass:(Class)cls;

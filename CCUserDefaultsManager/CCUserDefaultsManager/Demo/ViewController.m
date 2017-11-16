@@ -30,7 +30,7 @@
     [[CCUserDefaultsManager sharedManager] removeClass:[CCUserDefault class]];
     CCUserDefault *defaults = [CCUserDefault sharedManager];
     defaults.intType = 100;
-    NSLog(@"defaults-intType=%d",defaults.intType);
+    NSLog(@"defaults.intType=%d",defaults.intType);
 }
 
 // 存入NSUserDefault
@@ -50,18 +50,18 @@
     defaults.array = @[@1,@2,@3];
     defaults.dictionary = @{ @"key1" : @"value1" , @"key2" : @"value2" };
     defaults.url = [NSURL URLWithString:@"http://www.apple.com"];
-    
+
+    // 忽略的属性
     defaults.ignoreString = @"ignoreString";
     
-    // 分类方法
+    // 分类属性
     defaults.userName = @"apple";
 }
 
 // 从NSUserDefaults取出来
 - (void)fetchFromUserDefaults {
-    // 每一次的get方法都是在向NSUserDefaults中取值
     CCUserDefault *defaults = [CCUserDefault sharedManager];
-    NSLog(@"%@",defaults);
+    NSLog(@"defaults:%@",[defaults log]);
 }
 
 // 打印NSUserDefaults

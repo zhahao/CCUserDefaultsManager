@@ -39,6 +39,7 @@ typedef NS_ENUM(NSUInteger, CCEncodingType) {
 
 /// class's property's informations
 @interface CCClassPropertyInfo : NSObject
+@property (nonatomic, strong) NSString *fullName; ///< added prefix property's name
 @property (nonatomic, strong, readonly) NSString *name; ///< property's name
 @property (nonatomic, assign, readonly) CCEncodingType type;    ///< property's type
 @property (nonatomic, strong, readonly) NSString *typeEncoding; ///< property's encoding value
@@ -55,7 +56,7 @@ typedef NS_ENUM(NSUInteger, CCEncodingType) {
 
 /// class's property's informations
 @interface CCClassInfo : NSObject
-- (instancetype)initWithClass:(Class)class;
+- (instancetype)initWithClass:(Class)class prefix:(NSString *)prefix;
 @property (nonatomic,strong, readonly) NSDictionary<NSString *,CCClassPropertyInfo *> *propertyInfos; ///< all properties info for class
 @end
 
@@ -144,7 +145,7 @@ void swizzledSetterIMPForDouble(id self,SEL _cmd,double value)
     CC_LOCK;
     setValueForUserDefaults(^(NSUserDefaults *userDefaults) {
         CCClassPropertyInfo *propertyInfo = getClassPropertyInfo(self,_cmd,true);
-        [userDefaults setDouble:value forKey:propertyInfo.name];
+        [userDefaults setDouble:value forKey:propertyInfo.fullName];
     });
     CC_UNLOCK;
 }
@@ -154,7 +155,7 @@ void swizzledSetterIMPForFloat(id self,SEL _cmd,float value)
     CC_LOCK;
     setValueForUserDefaults(^(NSUserDefaults *userDefaults) {
         CCClassPropertyInfo *propertyInfo = getClassPropertyInfo(self,_cmd,true);
-        [userDefaults setFloat:value forKey:propertyInfo.name];
+        [userDefaults setFloat:value forKey:propertyInfo.fullName];
     });
     CC_UNLOCK;
 }
@@ -162,13 +163,13 @@ void swizzledSetterIMPForFloat(id self,SEL _cmd,float value)
 double swizzledGetterIMPForDouble(id self,SEL _cmd)
 {
     CCClassPropertyInfo *propertyInfo = getClassPropertyInfo(self,_cmd,true);
-    return [userDefaults() doubleForKey:propertyInfo.name];
+    return [userDefaults() doubleForKey:propertyInfo.fullName];
 }
 
 float swizzledGetterIMPForFloat(id self,SEL _cmd)
 {
     CCClassPropertyInfo *propertyInfo = getClassPropertyInfo(self,_cmd,true);
-    return [userDefaults() floatForKey:propertyInfo.name];
+    return [userDefaults() floatForKey:propertyInfo.fullName];
 }
 
 void swizzledSetterIMPForObject(id self,SEL _cmd,void *value)
@@ -178,7 +179,7 @@ void swizzledSetterIMPForObject(id self,SEL _cmd,void *value)
     CCEncodingType cType = propertyInfo.type & CCEncodingCTypeMask;
 
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    NSString *key = propertyInfo.name;
+    NSString *key = propertyInfo.fullName;
 
     if (cType == CCEncodingTypeObject){
         CCEncodingType ocType = propertyInfo.type & CCEncodingOCTypeMask;
@@ -212,7 +213,7 @@ void *swizzledGetterIMPForObject(id self,SEL _cmd)
     CCEncodingType cType = propertyInfo.type & CCEncodingCTypeMask;
 
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    NSString *key = propertyInfo.name;
+    NSString *key = propertyInfo.fullName;
 
     void *rtv = NULL;
     if (cType == CCEncodingTypeObject){
@@ -272,11 +273,16 @@ void *swizzledGetterIMPForObject(id self,SEL _cmd)
 
 - (void)addClass:(Class)cls
 {
+    [self addClass:cls prefix:nil];
+}
+
+- (void)addClass:(Class)cls prefix:(NSString *)prefix
+{
     CC_LOCK;
     NSString *className = NSStringFromClass(cls);
     NSMutableSet *swizzledClasses = [CCUserDefaultsManager sharedManager].swizzledClasses;
     if (![swizzledClasses containsObject:className]) {
-        [self swizzleClassWithName:className];
+        [self swizzleClassWithName:className prefix:prefix];
         [swizzledClasses addObject:className];
     }
     CC_UNLOCK;
@@ -307,10 +313,10 @@ void *swizzledGetterIMPForObject(id self,SEL _cmd)
 }
 
 
-- (void)swizzleClassWithName:(NSString *)className
+- (void)swizzleClassWithName:(NSString *)className prefix:(NSString *)prefix
 {
     Class class = NSClassFromString(className);
-    CCClassInfo *classInfo = [[CCClassInfo alloc] initWithClass:class];
+    CCClassInfo *classInfo = [[CCClassInfo alloc] initWithClass:class prefix:prefix];
 
     [classInfo.propertyInfos enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull name, CCClassPropertyInfo * _Nonnull info, BOOL * _Nonnull stop) {
         if ([class respondsToSelector:@selector(cc_blackList)]) {
@@ -334,7 +340,7 @@ void *swizzledGetterIMPForObject(id self,SEL _cmd)
             setterIMP = (IMP)swizzledSetterIMPForObject;
             getterIMP = (IMP)swizzledGetterIMPForObject;
         }
-        
+
         // 使用方法替换完成调剂
         class_replaceMethod(class, info.setter, setterIMP, [info.setterMethodSignature cStringUsingEncoding:NSUTF8StringEncoding]);
         class_replaceMethod(class, info.getter, getterIMP, [info.getterMethodSignature cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -414,7 +420,7 @@ void *swizzledGetterIMPForObject(id self,SEL _cmd)
 
 @implementation CCClassInfo
 
-- (instancetype)initWithClass:(Class)class
+- (instancetype)initWithClass:(Class)class prefix:(NSString *)prefix
 {
     self = [super init];
     if (!self) return nil;
@@ -430,6 +436,7 @@ void *swizzledGetterIMPForObject(id self,SEL _cmd)
         info.getterImp = class_getMethodImplementation(class, info.getter);
         info.setterImp = class_getMethodImplementation(class, info.setter);
         if (info.name){
+            info.fullName = [NSString stringWithFormat:@"%@%@",prefix,info.name];
             propertyInfos[info.name] = info;
         }
     }
@@ -443,3 +450,4 @@ void *swizzledGetterIMPForObject(id self,SEL _cmd)
 }
 
 @end
+

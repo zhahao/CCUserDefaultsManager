@@ -31,7 +31,8 @@
 /// 忽略的成员变量,需要实现CCUserDefaultsManager协议
 @property (nonatomic, strong) NSString *ignoreString;
 
-
+/// 用来打印
+- (NSString *)log;
 @end
 
 /// 可以根据不同种类,做不同的分类,以区分不同的业务逻辑,实现文件中使用@dynamic,避免编译器警告
