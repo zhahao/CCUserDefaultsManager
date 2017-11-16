@@ -25,7 +25,7 @@ typedef NS_ENUM(NSUInteger, CCEncodingType) {
     CCEncodingTypeBOOL              = 4,  ///< bool
     CCEncodingTypeObject            = 5,  ///< Object
 
-    //// OC types
+    /// OC types
     CCEncodingOCTypeMask            = 0xFF00,
     CCEncodingOCTypeUnSupport       = 1 << 8,   ///< unSupport obeject type
     CCEncodingOCTypeNSString        = 1 << 9,   ///< NSString

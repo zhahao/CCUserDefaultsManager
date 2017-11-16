@@ -48,11 +48,12 @@
     defaults.number = @10;
     defaults.date = [NSDate date];
     defaults.array = @[@1,@2,@3];
-    defaults.dictionary = @{ @"key1" : @"value1" , @"key2" : @"value2"};
+    defaults.dictionary = @{ @"key1" : @"value1" , @"key2" : @"value2" };
     defaults.url = [NSURL URLWithString:@"http://www.apple.com"];
     
     defaults.ignoreString = @"ignoreString";
     
+    // 分类方法
     defaults.userName = @"apple";
 }
 

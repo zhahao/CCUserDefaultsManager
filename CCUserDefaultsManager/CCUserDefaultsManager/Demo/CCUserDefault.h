@@ -13,7 +13,7 @@
 /// 使用单例
 @property (class, readonly, strong) CCUserDefault *sharedManager;
 
-/// c语言类型,支持整形和浮点型,包括NSInteger,CGFloat等
+/// c语言类型,仅支持整形、浮点型、布尔型,包括NSInteger,CGFloat等
 @property (nonatomic, assign) int intType;
 @property (nonatomic, assign) float floatType;
 @property (nonatomic, assign) double doubleType;
@@ -30,6 +30,7 @@
 
 /// 忽略的成员变量,需要实现CCUserDefaultsManager协议
 @property (nonatomic, strong) NSString *ignoreString;
+
 
 @end
 

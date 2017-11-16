@@ -28,7 +28,7 @@
 + (void)load
 {
     /// 将CCUserDefault添加到CCUserDefaultsManager中,那么CCUserDefault的成员变量的存取方法都会映射成与`NSUserDefaults`对应的存取方法
-    [[CCUserDefaultsManager sharedManager] addClass:[self class]];
+    [[CCUserDefaultsManager sharedManager] addClass:self];
 }
 
 + (NSArray *)cc_blackList

@@ -8,7 +8,12 @@
 
 # 简介
 
-这是一个用来集中式管理`NSUserDefaults`存储的框架,使对`NSUserDefaults`的存取操作具有更高的内聚性,框架原理是利用了Objective-C的runtime特性,动态修改了类的property行为。如果对任意一个类使用了`CCUserDefaultsManager`的`addClass`方法,那么该类的所有成员变量的`get`和`set`都会映射成`NSUserDefaults`对应的存取方法。当然,你也可以根据业务不同对该类写不同名称的分类!
+这是一个用来集中式管理`NSUserDefaults`存储的框架,使对`NSUserDefaults`的存取操作具有更高的内聚性,框架原理是利用了Objective-C的runtime特性,动态修改了类的property行为。当使用`[[CCUserDefaultsManager sharedManager] addClass:XXClass]`方法,那么`XXClass`的所有成员变量的`get`和`set`都会映射成NSUserDefaults对应的存取方法.
+
+ 支持的存储类型:
+
+- c语言类型,仅支持整形、浮点型、布尔型,包括NSInteger,CGFloat等
+- oc对象类型,仅支持NSString, NSData, NSNumber, NSDate, NSArray, NSDictionary ,NSURL等不可变版本
 
 
 
@@ -53,7 +58,7 @@
 + (void)load
 {
     /// 将CCUserDefault添加到CCUserDefaultsManager中,那么CCUserDefault的成员变量的`set`和`get`方法都会映射成与`NSUserDefaults`对应的存取方法
-    [[CCUserDefaultsManager sharedManager] addClass:[CCUserDefault class]];
+    [[CCUserDefaultsManager sharedManager] addClass:self];
 }
 @end
 ```
