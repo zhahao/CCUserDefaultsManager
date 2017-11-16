@@ -16,10 +16,9 @@
 - oc对象类型,仅支持NSString, NSData, NSNumber, NSDate, NSArray, NSDictionary ,NSURL等不可变版本
 
 
-
 # 使用
 
-- 新建一个类,推荐使用单例类
+### 新建一个类
 
 ```
 /// .h文件
@@ -63,7 +62,7 @@
 @end
 ```
 
-- 使用该类
+### 使用该类
 
 存值
 
@@ -82,6 +81,15 @@ NSLog(@"%d%@",defaults.intType,defaults.string);
 ```
 
 `CCUserDefault`类的所有成员变量存取都会映射到`NSUserDefaults`中
+
+
+
+### 其他功能:
+
+- 添加类的所有属性前缀
+- 添加黑名单
+
+
 
 ## 系统要求
 
