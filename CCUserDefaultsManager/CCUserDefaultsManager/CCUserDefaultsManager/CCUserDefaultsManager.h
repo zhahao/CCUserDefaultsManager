@@ -36,7 +36,8 @@
 
 @protocol CCUserDefaultsManager<NSObject>
 
-/// 如果有不需要被关联到NSUserDefaults的成员属性,请加入该黑名单.
+/// 如果有不需要被关联到NSUserDefaults的成员属性,请加入该黑名单,
+/// 如果该类已经添加了统一的前缀,那么返回的数组里面的名称就不再需要添加前缀
 + (NSArray<NSString *> *)cc_blackList;
 
 @end

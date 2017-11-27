@@ -62,7 +62,7 @@ typedef NS_ENUM(NSUInteger, CCEncodingType) {
 
 /// UserDefaultsManager
 @interface CCUserDefaultsManager()
-@property (nonatomic, strong) NSMutableDictionary<NSString *,CCClassInfo *> *classInfos; ///< swizzled class's infos
+@property (nonatomic, strong) NSMutableDictionary<NSString *,CCClassInfo *> *classInfos; ///< swizzled class's informations
 @property (nonatomic, strong) NSMutableSet<NSString *> *swizzledClasses; ///< all classes only swizzled once
 @property (nonatomic, strong) dispatch_semaphore_t lock; ///< lock
 @end
@@ -70,6 +70,8 @@ typedef NS_ENUM(NSUInteger, CCEncodingType) {
 @implementation CCUserDefaultsManager
 
 #pragma mark - Private Helper
+
+/// data for type encoding, just apply to NSUserDefaults
 /// https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html
 static CCEncodingType ModelGetTypeEncoding(const char *type){
     if (!type || strlen(type) == 0) return CCEncodingTypeUnSupport;
@@ -105,22 +107,22 @@ static CCEncodingType ModelGetOCTypeEncoding(Class class){
     return CCEncodingOCTypeUnSupport;
 }
 
-NS_INLINE NSUserDefaults *userDefaults(){
+NS_INLINE NSUserDefaults *GetUserDefaults(){
     return [NSUserDefaults standardUserDefaults];
 }
 
-NS_INLINE NSString *unSupportOCTypeError(id object){
+NS_INLINE NSString *UnSupportOCTypeError(id object){
     return [NSString stringWithFormat:@"<%@:%@ is not support save to userDefaults>",[object class],object];
 }
 
-NS_INLINE void setValueForUserDefaults(void (^block)(NSUserDefaults *userDefaults)){
+NS_INLINE void SetValueForUserDefaults(void (^block)(NSUserDefaults *userDefaults)){
     if (block) {
-        block(userDefaults());
-        [userDefaults() synchronize];
+        block(GetUserDefaults());
+        [GetUserDefaults() synchronize];
     }
 }
 
-static CCClassPropertyInfo *getClassPropertyInfo(id self,SEL _cmd,bool isSetter)
+static CCClassPropertyInfo *GetClassPropertyInfo(id self,SEL _cmd,bool isSetter)
 {
     Class cls = object_getClass(self);
     CCClassInfo *classInfos = [CCUserDefaultsManager sharedManager].classInfos[NSStringFromClass(cls)];
@@ -140,42 +142,42 @@ static CCClassPropertyInfo *getClassPropertyInfo(id self,SEL _cmd,bool isSetter)
 }
 
 #pragma mark - Swizzled setter And getter IMP
-void swizzledSetterIMPForDouble(id self,SEL _cmd,double value)
+void SwizzledSetterIMPForDouble(id self,SEL _cmd,double value)
 {
     CC_LOCK;
-    setValueForUserDefaults(^(NSUserDefaults *userDefaults) {
-        CCClassPropertyInfo *propertyInfo = getClassPropertyInfo(self,_cmd,true);
+    SetValueForUserDefaults(^(NSUserDefaults *userDefaults) {
+        CCClassPropertyInfo *propertyInfo = GetClassPropertyInfo(self,_cmd,true);
         [userDefaults setDouble:value forKey:propertyInfo.fullName];
     });
     CC_UNLOCK;
 }
 
-void swizzledSetterIMPForFloat(id self,SEL _cmd,float value)
+void SwizzledSetterIMPForFloat(id self,SEL _cmd,float value)
 {
     CC_LOCK;
-    setValueForUserDefaults(^(NSUserDefaults *userDefaults) {
-        CCClassPropertyInfo *propertyInfo = getClassPropertyInfo(self,_cmd,true);
+    SetValueForUserDefaults(^(NSUserDefaults *userDefaults) {
+        CCClassPropertyInfo *propertyInfo = GetClassPropertyInfo(self,_cmd,true);
         [userDefaults setFloat:value forKey:propertyInfo.fullName];
     });
     CC_UNLOCK;
 }
 
-double swizzledGetterIMPForDouble(id self,SEL _cmd)
+double SwizzledGetterIMPForDouble(id self,SEL _cmd)
 {
-    CCClassPropertyInfo *propertyInfo = getClassPropertyInfo(self,_cmd,true);
-    return [userDefaults() doubleForKey:propertyInfo.fullName];
+    CCClassPropertyInfo *propertyInfo = GetClassPropertyInfo(self,_cmd,true);
+    return [GetUserDefaults() doubleForKey:propertyInfo.fullName];
 }
 
-float swizzledGetterIMPForFloat(id self,SEL _cmd)
+float SwizzledGetterIMPForFloat(id self,SEL _cmd)
 {
-    CCClassPropertyInfo *propertyInfo = getClassPropertyInfo(self,_cmd,true);
-    return [userDefaults() floatForKey:propertyInfo.fullName];
+    CCClassPropertyInfo *propertyInfo = GetClassPropertyInfo(self,_cmd,true);
+    return [GetUserDefaults() floatForKey:propertyInfo.fullName];
 }
 
-void swizzledSetterIMPForObject(id self,SEL _cmd,void *value)
+void SwizzledSetterIMPForObject(id self,SEL _cmd,void *value)
 {
     CC_LOCK;
-    CCClassPropertyInfo *propertyInfo = getClassPropertyInfo(self,_cmd,true);
+    CCClassPropertyInfo *propertyInfo = GetClassPropertyInfo(self,_cmd,true);
     CCEncodingType cType = propertyInfo.type & CCEncodingCTypeMask;
 
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
@@ -186,7 +188,7 @@ void swizzledSetterIMPForObject(id self,SEL _cmd,void *value)
         if (ocType & CCEncodingOCTypeUnSupport) {
             // 不支持的存储类型
             @throw [NSException exceptionWithName:kCCUserDefaultsManagerObjectUnSupportError
-                                           reason:unSupportOCTypeError((__bridge id)value)
+                                           reason:UnSupportOCTypeError((__bridge id)value)
                                          userInfo:nil];
         }else if (ocType & CCEncodingOCTypeNSURL) {
             [userDefaults setURL:(__bridge NSURL*)value forKey:key];
@@ -207,9 +209,9 @@ void swizzledSetterIMPForObject(id self,SEL _cmd,void *value)
     CC_UNLOCK;
 }
 
-void *swizzledGetterIMPForObject(id self,SEL _cmd)
+void *SwizzledGetterIMPForObject(id self,SEL _cmd)
 {
-    CCClassPropertyInfo *propertyInfo = getClassPropertyInfo(self,_cmd,false);
+    CCClassPropertyInfo *propertyInfo = GetClassPropertyInfo(self,_cmd,false);
     CCEncodingType cType = propertyInfo.type & CCEncodingCTypeMask;
 
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
@@ -234,7 +236,7 @@ void *swizzledGetterIMPForObject(id self,SEL _cmd)
             rtv = (__bridge void *)[userDefaults URLForKey:key];
         }else{
             @throw [NSException exceptionWithName:kCCUserDefaultsManagerObjectUnSupportError
-                                           reason:unSupportOCTypeError(self)
+                                           reason:UnSupportOCTypeError(self)
                                          userInfo:nil];
         }
     }else if (cType == CCEncodingTypeInt){
@@ -331,14 +333,14 @@ void *swizzledGetterIMPForObject(id self,SEL _cmd)
         IMP setterIMP = NULL;
         IMP getterIMP = NULL;
         if (type == CCEncodingTypeFloat) {
-            setterIMP = (IMP)swizzledSetterIMPForFloat;
-            getterIMP = (IMP)swizzledGetterIMPForFloat;
+            setterIMP = (IMP)SwizzledSetterIMPForFloat;
+            getterIMP = (IMP)SwizzledGetterIMPForFloat;
         }else if (type == CCEncodingTypeDouble){
-            setterIMP = (IMP)swizzledSetterIMPForDouble;
-            getterIMP = (IMP)swizzledGetterIMPForDouble;
+            setterIMP = (IMP)SwizzledSetterIMPForDouble;
+            getterIMP = (IMP)SwizzledGetterIMPForDouble;
         }else{
-            setterIMP = (IMP)swizzledSetterIMPForObject;
-            getterIMP = (IMP)swizzledGetterIMPForObject;
+            setterIMP = (IMP)SwizzledSetterIMPForObject;
+            getterIMP = (IMP)SwizzledGetterIMPForObject;
         }
 
         // 使用方法替换完成调剂
