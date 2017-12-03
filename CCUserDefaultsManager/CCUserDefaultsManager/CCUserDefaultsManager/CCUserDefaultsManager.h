@@ -9,7 +9,8 @@
 #import <Foundation/Foundation.h>
 
 /**
- 这是一个用来集中式管理NSUserDefaults存储的框架,使用`[[CCUserDefaultsManager sharedManager] addClass:XXClass]`方法,那么`XXClass`的所有成员变量的`get`和`set`都会映射成NSUserDefaults对应的存取方法.
+ 这是一个用来集中式管理NSUserDefaults存储的框架,使用`[[CCUserDefaultsManager sharedManager] addClass:XXClass]`方法时,
+ 那么`XXClass`的所有成员变量的`get`和`set`都会映射成NSUserDefaults对应的存取方法.
  支持的存储类型:
     1.c语言类型,仅支持整形、浮点型、布尔型,包括NSInteger,CGFloat等
     2.oc对象类型,仅支持NSString, NSData, NSNumber, NSDate, NSArray, NSDictionary ,NSURL等不可变版本
@@ -23,6 +24,7 @@
 
 /// 添加需要和NSUserDefaults映射的class,多次添加同一个class,最终只会被添加一次.
 - (void)addClass:(Class)cls;
+
 /// 添加一个映射class和它的所有属性前缀
 - (void)addClass:(Class)cls prefix:(NSString *)prefix;
 

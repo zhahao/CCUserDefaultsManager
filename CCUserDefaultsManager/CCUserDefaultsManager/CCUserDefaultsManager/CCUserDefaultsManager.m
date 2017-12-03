@@ -194,7 +194,7 @@ void SwizzledSetterIMPForObject(id self,SEL _cmd,void *value)
             [userDefaults setURL:(__bridge NSURL*)value forKey:key];
         }else{
             @try {
-                // 存储的NSDictionary,NSDictionary等里面包含了不支持的数据类型会发生错误.
+                // 存储的NSDictionary,NSArray等里面包含了不支持的数据类型会发生错误.
                 [userDefaults setObject:(__bridge id)value forKey:key];
             } @catch (NSException *exception) {
                 NSLog(@"%@",exception);
